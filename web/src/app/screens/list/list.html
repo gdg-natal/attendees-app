@@ -1,0 +1,52 @@
+<main class="talks">
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-progress-spinner color="primary" mode="indeterminate"></mat-progress-spinner>
+      <p>Loading calendar events...</p>
+    </div>
+  } @else {
+    @if (error()) {
+      <div class="error-container">
+        <mat-card class="error-card">
+          <mat-card-content>
+            <mat-icon color="warn">warning</mat-icon>
+            <p>{{ error() }}</p>
+            <button mat-button color="primary" (click)="refreshEvents()">
+              <mat-icon>refresh</mat-icon>
+              Retry
+            </button>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    }
+
+    <section class="talks__stages-menu">
+      @for (stage of stages(); track stage) {
+        <button matButton="elevated" [class.selected]="isStageSelected(stage)" (click)="selectStage(stage)">
+          {{ stage }}
+        </button>
+      }
+    </section>
+
+    <mat-divider></mat-divider>
+
+    <section>
+      <div class="header-section">
+        <h2>{{ displayTitle() }}</h2>
+      </div>
+      
+      <div class="talks__list-talks">
+        @if (filteredTalks().length > 0) {
+          @for (talk of filteredTalks(); track talk.title) {
+            <card-item [talk]="talk" />
+          }
+        } @else {
+          <div class="no-talks">
+            <mat-icon>event_note</mat-icon>
+            <p>No talks found for this stage.</p>
+          </div>
+        }
+      </div>
+    </section>
+  }
+</main>
