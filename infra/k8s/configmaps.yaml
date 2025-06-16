@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-config
+  namespace: gdg-attendees
+  labels:
+    app.kubernetes.io/name: gdg-attendees
+    app.kubernetes.io/component: api
+data:
+  # API Configuration
+  PORT: "3000"
+  GIN_MODE: "release"
+  # Database configuration (adjust as needed)
+  DB_HOST: "postgres-service"
+  DB_PORT: "5432"
+  DB_NAME: "attendees_db"
+  # CORS settings
+  CORS_ALLOWED_ORIGINS: "https://attendees.gdg.local,http://localhost:8080"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-config
+  namespace: gdg-attendees
+  labels:
+    app.kubernetes.io/name: gdg-attendees
+    app.kubernetes.io/component: web
+data:
+  # Nginx configuration for SPA
+  nginx.conf: |
+    server {
+        listen 80;
+        server_name localhost;
+        root /usr/share/nginx/html;
+        index index.html index.htm;
+        
+        # Handle SPA routing
+        location / {
+            try_files $uri $uri/ /index.html;
+        }
+        
+        # API proxy to backend
+        location /api/ {
+            proxy_pass http://api-service:3000/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+        
+        # Health check endpoint
+        location /health {
+            access_log off;
+            return 200 "healthy\n";
+            add_header Content-Type text/plain;
+        }
+        
+        # Security headers
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-XSS-Protection "1; mode=block" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header Referrer-Policy "no-referrer-when-downgrade" always;
+        add_header Content-Security-Policy "default-src 'self' http: https: data: blob: 'unsafe-inline'" always;
+    }

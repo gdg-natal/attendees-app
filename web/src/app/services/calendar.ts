@@ -1,14 +1,13 @@
-import { CalendarEvent } from "../types/talks";
+import { TalkType } from "../types/talks";
 
 const API_URL = 'http://localhost:3000/api/v1';
 
-export type CalendarResponse = {
-  items: CalendarEvent[];
-  nextPageToken?: string;
-  summary: string;
+export type GetTalksResponseType = {
+  talks: TalkType[];
+  total: number;
 }
 
-export const getTalks = async (): Promise<CalendarResponse> => {
+export const getTalks = async (): Promise<GetTalksResponseType> => {
   try {
     const response = await fetch(`${API_URL}/talks`);
     

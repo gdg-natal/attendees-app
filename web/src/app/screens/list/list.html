@@ -37,8 +37,8 @@
       
       <div class="talks__list-talks">
         @if (filteredTalks().length > 0) {
-          @for (talk of filteredTalks(); track talk.title) {
-            <card-item [talk]="talk" />
+          @for (talk of filteredTalks(); track talk.id) {
+            <app-card-item [talk]="talk" />
           }
         } @else {
           <div class="no-talks">

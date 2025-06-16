@@ -1,0 +1,30 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: gdg-attendees
+  namespace: gdg-attendees
+
+resources:
+  - namespace.yaml
+  - secrets.yaml
+  - configmaps.yaml
+  - services.yaml
+  - api-deployment.yaml
+  - web-deployment.yaml
+  - ingress.yaml
+  - hpa.yaml
+  - pdb.yaml
+  - monitoring.yaml
+
+images:
+  - name: gdg-attendees-api
+    newTag: latest
+  - name: attendees-app
+    newTag: latest
+
+commonLabels:
+  app.kubernetes.io/name: gdg-attendees
+  app.kubernetes.io/managed-by: kustomize
+
+namespace: gdg-attendees

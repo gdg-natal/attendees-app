@@ -1,0 +1,25 @@
+# Development Dockerfile for Go API with live reloading
+FROM golang:1.24-alpine
+
+# Install air for live reloading and other necessary tools
+RUN go install github.com/air-verse/air@latest
+
+# Install git and curl for dependencies and health checks
+RUN apk add --no-cache git curl
+
+WORKDIR /app
+
+# Copy go mod and sum files first for better caching
+COPY go.mod go.sum ./
+
+# Download dependencies
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Expose the API port
+EXPOSE 3000
+
+# Use air for live reloading in development
+CMD ["air", "-c", ".air.toml"]

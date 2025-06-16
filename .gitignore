@@ -2,4 +2,18 @@
 .DS_Store
 Thumbs.db
 
+# Environment files
 .env
+
+# Build outputs and temporary files
+api/tmp/
+web/dist/
+web/.angular/
+node_modules/
+
+# Logs
+*.log
+build-errors.log
+
+# Docker
+.dockerignore

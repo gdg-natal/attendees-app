@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-service
+  namespace: gdg-attendees
+  labels:
+    app.kubernetes.io/name: gdg-attendees
+    app.kubernetes.io/component: api
+spec:
+  type: ClusterIP
+  ports:
+  - port: 3000
+    targetPort: 3000
+    protocol: TCP
+    name: http
+  selector:
+    app.kubernetes.io/name: gdg-attendees
+    app.kubernetes.io/component: api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-service
+  namespace: gdg-attendees
+  labels:
+    app.kubernetes.io/name: gdg-attendees
+    app.kubernetes.io/component: web
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app.kubernetes.io/name: gdg-attendees
+    app.kubernetes.io/component: web

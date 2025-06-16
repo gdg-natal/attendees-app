@@ -1,0 +1,19 @@
+# Development Dockerfile for Angular with live reloading
+FROM node:24.1-alpine
+
+WORKDIR /app
+
+# Copy package files first for better caching
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Expose the development server port
+EXPOSE 4200
+
+# Start the Angular development server with live reloading
+CMD ["npm", "run", "dev", "--", "--poll", "2000"]

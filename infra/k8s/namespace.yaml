@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gdg-attendees
+  labels:
+    app.kubernetes.io/name: gdg-attendees
+    app.kubernetes.io/component: namespace

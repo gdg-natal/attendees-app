@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -21,6 +22,7 @@ type Talk struct {
 	Company     string `json:"company,omitempty"`
 	Start       string `json:"start,omitempty"`
 	End         string `json:"end,omitempty"`
+	Stage       string `json:"stage,omitempty"`
 }
 
 type CalendarEvent struct {
@@ -35,7 +37,8 @@ type CalendarEvent struct {
 		DateTime string `json:"dateTime"`
 		Date     string `json:"date"`
 	} `json:"end"`
-	Creator struct {
+	Location string `json:"location"`
+	Creator  struct {
 		Email       string `json:"email"`
 		DisplayName string `json:"displayName"`
 	} `json:"creator"`
@@ -55,12 +58,19 @@ type CalendarResponse struct {
 }
 
 func GetAllTalks(c *fiber.Ctx) error {
-	calendarID := ""
-	apiKey := ""
+	calendarID := os.Getenv("CALENDAR_ID")
+	calendarAPIKey := os.Getenv("CALENDAR_API_KEY")
 
-	baseURL := "https://www.googleapis.com/calendar/v3/calendars"
+	if calendarID == "" || calendarAPIKey == "" {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error":   "Missing required environment variables",
+			"details": "CALENDAR_ID and CALENDAR_API_KEY must be set",
+		})
+	}
+
+	calendarBaseURL := os.Getenv("CALENDAR_BASE_URL")
 	url := fmt.Sprintf("%s/%s/events?key=%s&orderBy=startTime&singleEvents=true",
-		baseURL, calendarID, apiKey)
+		calendarBaseURL, calendarID, calendarAPIKey)
 
 	resp, err := http.Get(url)
 	if err != nil {
@@ -114,6 +124,7 @@ func parseCalendarEvent(event CalendarEvent) Talk {
 		Speaker: event.Summary,
 		Start:   event.Start.DateTime,
 		End:     event.End.DateTime,
+		Stage:   event.Location,
 	}
 
 	if event.Description != "" {
